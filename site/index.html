@@ -11,26 +11,29 @@
 <body>
 <section class="hero is-fullheight is-success is-bold">
     <div class="container">
-        <table id="employees">
-            <tr>
-                <th>Name</th>
-                <th>Owed</th>
-            </tr>
-            {{range .Employees}}
+        <div class="tbl-container">
+            <table id="employees">
+                <tr>
+                    <th>Name</th>
+                    <th>Owed</th>
+                </tr>
+                {{range .Employees}}
                 <tr>
                     <td>{{.Last}}, {{.First}}</td>
                     <td>${{.Owed}}</td>
                 </tr>
-            {{end}}
-        </table>
-        <table id="clients">
-            <tr>
-                <th>Name</th>
-                <th>Balance</th>
-                <th>Period</th>
-                <th>Latest Cut</th>
-            </tr>
-            {{range $_, $c := .Clients}}
+                {{end}}
+            </table>
+        </div>
+        <div class="tbl-container">
+            <table id="clients">
+                <tr>
+                    <th>Name</th>
+                    <th>Balance</th>
+                    <th>Period</th>
+                    <th>Latest Cut</th>
+                </tr>
+                {{range $_, $c := .Clients}}
                 <tr>
                     <td>{{$c.Last}}, {{$c.First}}</td>
                     <td>${{$c.Balance}}</td>
@@ -51,38 +54,39 @@
                         {{/* If we have more than 0 cuts... */}}
                         {{with $l := len $c.Cuts}}
                             {{if gt $l 0}}
-                                var dates = [
+                            var dates = [
                                 {{range $c.Cuts}}
                                     {{/* Then get the dates... */}}
                                     '{{.Date.Format "Jan 2, 2006"}}',
                                 {{end}}
-                                ];
+                            ];
 
-                                // Find the latest date in the array
-                                var latest = new Date(Math.max.apply(null, dates.map(function(e) {
-                                    // Parse each element in the array
-                                    return new Date(e);
-                                })));
-                                // Get the distance in days from now by taking the difference in ms since epoch and converting to rounded days
-                                // One is subtracted so today isn't counted
-                                var distanceInDays = Math.floor((new Date().getTime() - latest.getTime()) / (1000 * 60 * 60 * 24) - 1);
+                            // Find the latest date in the array
+                            var latest = new Date(Math.max.apply(null, dates.map(function(e) {
+                                // Parse each element in the array
+                                return new Date(e);
+                            })));
+                            // Get the distance in days from now by taking the difference in ms since epoch and converting to rounded days
+                            // One is subtracted so today isn't counted
+                            var distanceInDays = Math.floor((new Date().getTime() - latest.getTime()) / (1000 * 60 * 60 * 24) - 1);
 
-                                var niceDistance = "No data";
-                                if (distanceInDays === 0) {
-                                    niceDistance = "Today";
-                                } else if (distanceInDays === 1) {
-                                    niceDistance = "Yesterday";
-                                } else {
-                                    niceDistance = distanceInDays + " days ago";
-                                }
+                            var niceDistance = "No data";
+                            if (distanceInDays === 0) {
+                                niceDistance = "Today";
+                            } else if (distanceInDays === 1) {
+                                niceDistance = "Yesterday";
+                            } else {
+                                niceDistance = distanceInDays + " days ago";
+                            }
 
-                                document.getElementById("{{$c.Uuid}}").innerHTML = niceDistance;
+                            document.getElementById("{{$c.Uuid}}").innerHTML = niceDistance;
                             {{end}}
                         {{end}}
                     </script>
                 </tr>
-            {{end}}
-        </table>
+                {{end}}
+            </table>
+        </div>
     </div>
 </section>
 </body>
