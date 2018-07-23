@@ -21,7 +21,6 @@ type Cut struct {
 
 func LoadCutWithUuid(uuid string) (Cut, error) {
 	conn := openConnection()
-	LogDbQueries(conn)
 
 	var c Cut
 	err := conn.Model(&c).Where("uuid = ?", uuid).Select()
@@ -48,7 +47,7 @@ func LoadCutWithUuid(uuid string) (Cut, error) {
 		}
 		c.EmployeeSlice = append(c.EmployeeSlice, employee)
 	}
-	
+
 	return c, err
 }
 
@@ -93,7 +92,6 @@ func LoadCutsForClient(uuid string) []Cut {
 
 func (c Cut) Save() error {
 	conn := openConnection()
-	LogDbQueries(conn)
 
 	// Hackery required because the ORM has issues with arrays apparently
 	// Make it look like an array
