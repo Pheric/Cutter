@@ -49,7 +49,7 @@ func Init(port int) {
 func registerPages() {
 	index := InitIndex()
 	Pages[index.Path] = index
-	index.InitAutoRecache(time.Second * 30)
+	index.InitAutoRecache(time.Minute * 30)
 
 
 }
