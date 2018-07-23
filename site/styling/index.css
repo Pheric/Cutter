@@ -1,0 +1,17 @@
+html * {
+    border: 1px solid red;
+}
+
+.container {
+    padding: 30px;
+    background: rgba(255, 255, 255, .2);
+}
+
+#employees,#clients {
+    display: inline-block;
+}
+
+#employees,#clients tr td,th {
+    text-align: center;
+    padding: 0 30px;
+}
