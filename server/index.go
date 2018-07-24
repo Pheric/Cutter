@@ -16,13 +16,13 @@ func InitIndex() Page {
 	}
 }
 
-var t *template.Template
+var indexTemplate *template.Template
 func gen(initial bool) ([]byte, error) {
 	var b bytes.Buffer
 	var err error
 
 	if initial {
-		t, err = template.ParseFiles("site/index.html")
+		indexTemplate, err = template.ParseFiles("site/index.html")
 		if err != nil {
 			return nil, fmt.Errorf("error generating index.html: %v\n", err)
 		}
@@ -40,7 +40,7 @@ func gen(initial bool) ([]byte, error) {
 		// Do not return
 	}
 
-	err = t.Execute(&b, struct {
+	err = indexTemplate.Execute(&b, struct {
 		Employees []data.Employee
 		Clients []data.Client
 	}{

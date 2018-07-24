@@ -31,5 +31,5 @@ func LoadPaymentsForTarget(uuid string) ([]Payment, error) {
 func (p Payment) SavePayment() error {
 	conn := openConnection()
 
-	return conn.Insert(p)
+	return conn.Insert(&p)
 }

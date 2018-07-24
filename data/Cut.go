@@ -85,7 +85,6 @@ func LoadCutsForClient(uuid string) []Cut {
 		}(uuid.Uuid)
 	}
 	wg.Wait()
-	log.Println(len(cuts))
 
 	return cuts
 }

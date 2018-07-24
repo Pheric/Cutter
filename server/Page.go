@@ -49,6 +49,7 @@ func (p *Page) ServePage(w http.ResponseWriter, r *http.Request) {
 		err := p.Recache(true)
 		if err != nil {
 			log.Printf("Error while attempting live page load: %v\n", err)
+			// TODO 500
 			http.Error(w, "internal server error", http.StatusInternalServerError)
 			return
 		}

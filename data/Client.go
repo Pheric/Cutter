@@ -28,25 +28,28 @@ type Client struct {
 	Cuts      []Cut     `sql:"-"`
 }
 
-func LoadClientWithUuid(uuid string) (*Client, error) {
+func LoadClientWithUuid(uuid string) (Client, error) {
+	if uuid == "" {
+		return MakeClient(), nil
+	}
 	conn := openConnection()
 
 	c := new(Client)
 	err := conn.Model(c).Where("uuid = ?", uuid).Select()
 	if err != nil {
 		err = fmt.Errorf("error while loading client with uuid %v: %v\n", uuid, err)
-		return nil, err
+		return MakeClient(), err
 	}
 
 	c.Payments, err = LoadPaymentsForTarget(uuid)
 	if err != nil {
 		err = fmt.Errorf("error while loading payments for client with uuid %v: %v\n", uuid, err)
-		return nil, err
+		return MakeClient(), err
 	}
 
 	c.Cuts = LoadCutsForClient(uuid)
 
-	return c, nil
+	return *c, nil
 }
 
 func LoadAllClients() ([]Client, error) {
@@ -73,7 +76,6 @@ func LoadAllClients() ([]Client, error) {
 	var lock = sync.Mutex{}
 	wg.Add(len(ids))
 	for _, u := range ids {
-		log.Println(u)
 		go func(u string) {
 			defer wg.Done()
 			c, err := LoadClientWithUuid(u)
@@ -82,7 +84,7 @@ func LoadAllClients() ([]Client, error) {
 				return
 			}
 			lock.Lock()
-			clients = append(clients, *c)
+			clients = append(clients, c)
 			lock.Unlock()
 		}(u.Uuid)
 	}
@@ -91,12 +93,24 @@ func LoadAllClients() ([]Client, error) {
 	return clients, nil
 }
 
+func MakeClient() Client {
+	return Client {
+		First: "John",
+		Last: "Doe",
+		Address: "123 Wallaby Way",
+		Phone: "+1 (000) 000-0000",
+		Quote: 30,
+		Ttc: 15,
+		Period: WEEKLY,
+	}
+}
+
 func (c Client) SaveShallow() error {
 	conn := openConnection()
 
-	_, err := conn.Model(c).Returning("uuid").Insert()
+	_, err := conn.Model(&c).Returning("uuid").Insert()
 	if err != nil && strings.Contains(err.Error(), "#23505") { // If row exists
-		_, e := conn.Model(c).Where("uuid = ?", c.Uuid).Update()
+		_, e := conn.Model(&c).Where("uuid = ?", c.Uuid).Update()
 		err = e
 	}
 

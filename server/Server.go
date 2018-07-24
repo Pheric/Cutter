@@ -32,6 +32,7 @@ func Init(port int) {
 
 	mux := http.NewServeMux()
 	mux.Handle("/styling/", http.StripPrefix("/styling", (http.FileServer(http.FileSystem(http.Dir("site/styling/"))))))
+	mux.Handle("/client", http.HandlerFunc(ServeClientPage))
 	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
 		p := Pages["index"]
 		(&p).ServePage(w, r)
@@ -50,8 +51,6 @@ func registerPages() {
 	index := InitIndex()
 	Pages[index.Path] = index
 	index.InitAutoRecache(time.Minute * 30)
-
-
 }
 
 // FIXME:

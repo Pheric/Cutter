@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/styling/client.css">
+    <meta charset="UTF-8">
+    <title>Modify Client</title>
+</head>
+<body>
+    <div class="container">
+        <!-- Personal Information -->
+        <div class="block">
+            <h5>Modify the client's personal information. Press "Submit Query" after modification.</h5>
+            <form action="/client?cid={{.Uuid}}" method="post">
+                <fieldset>
+                    <legend>Name</legend>
+                    <input name="last" type="text" value="{{.Last}}" required>
+                    ,
+                    <input name="first" type="text" value="{{.First}}">
+                </fieldset>
+                <label for="phone">Phone</label>
+                <input name="phone" id="phone" type="text" value="{{.Phone}}">
+                <label for="address">Address</label>
+                <input name="address" id="address" type="text" value="{{.Address}}">
+                <input type="submit">
+            </form>
+        </div>
+        <!-- Job Information -->
+        <div class="block">
+            <h5>Modify the information pertaining to the client's property. Quote is the normal weekly price. TTC is the average time to cut. Cutting period is, on average, how often the property is cut.</h5>
+            <form action="/client?cid={{.Uuid}}" method="post">
+                <label for="quote">Quote ($)</label>
+                <input name="quote" id="quote" type="number" value="{{.Quote}}" required>
+                <label for="ttc">TTC (mins)</label>
+                <input name="ttc" id="ttc" type="number" value="{{.Ttc}}">
+                <fieldset>
+                    <legend>Cutting Period</legend>
+                    <input name="period" id="pd0" type="radio" value="0"> Weekly<br>
+                    <input name="period" id="pd1" type="radio" value="1"> Bi-Weekly<br>
+                    <input name="period" id="pd2" type="radio" value="2"> On Demand<br>
+                </fieldset>
+                <input type="submit">
+            </form>
+            <script type="text/javascript">
+                document.getElementById("pd{{.Period}}").checked = true;
+            </script>
+        </div>
+        <!-- Balance Information -->
+        <div class="block">
+            <h2 id="bal-heading">Balance: ${{.Balance}}</h2>
+            <h3><u>Add Payment</u></h3>
+            <h5>Record a payment made by the client. The amount is the amount of the payment, and the date is the date the payment was made.</h5>
+            <form action="/client?cid={{.Uuid}}" method="post">
+                <label for="amount">Amount ($)</label>
+                <input name="amount" id="amount" type="number" value="{{.Quote}}" required>
+                <label for="date">Date</label>
+                <input name="date" id="date" type="date" required>
+                <input type="submit">
+            </form>
+            <script type="text/javascript">
+                if({{.Balance}} < 0){
+                    document.getElementById("bal-heading").setAttribute("style", "color: #FF5D47");
+                } else if({{.Balance}} > {{.Quote}}) {
+                    document.getElementById("bal-heading").setAttribute("style", "color: #33FF55");
+                }
+                document.getElementById("date").value = new Date().toISOString().substr(0, 10);
+            </script>
+        </div>
+        <!-- Log -->
+        <div class="block">
+            <table id="timeline">
+                <tr>
+                    <th>Action</th>
+                    <th>Date</th>
+                    <th>Balance Change</th>
+                </tr>
+            </table>
+            <script type="text/javascript">
+                var data = [
+                    {{range .Payments}}
+                        {
+                            type: 'Payment',
+                            date: '{{.Date.Format "Jan 2, 2006"}}',
+                            balchg: '{{.Amount}}'
+                        },
+                    {{end}}
+                    {{range .Cuts}}
+                        {
+                            type: 'Cut',
+                            date: '{{.Date.Format "Jan 2, 2006"}}',
+                            balchg: '-{{.Price}}'
+                        },
+                    {{end}}
+                ];
+                var sorted = data.sort(function(a, b){
+                    return new Date(b.date) - new Date(a.date);
+                });
+                var timeline = document.getElementById("timeline");
+
+                for(i = sorted.length-1; i >= 0; i--){
+                    var r = timeline.insertRow(1);
+                    r.insertCell(0).innerHTML = sorted[i].type;
+                    r.insertCell(1).innerHTML = sorted[i].date;
+                    r.insertCell(2).innerHTML = sorted[i].balchg;
+
+                    var color = "rgba(255, 255, 255, 0)";
+                    if(sorted[i].balchg >= 0){
+                        color = "rgba(50, 255, 100, .75)";
+                    } else {
+                        color = "rgba(255, 100, 75, .75)";
+                    }
+                    r.style.backgroundColor = color;
+                }
+            </script>
+        </div>
+    </div>
+</body>
+</html>
