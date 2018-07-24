@@ -76,6 +76,10 @@ func servePostRequest(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	} else if quote := r.FormValue("quote"); quote != "" { // job information
+		if clientId == "" {
+			return
+		}
+
 		parsedQuote, err := strconv.ParseFloat(quote, 32)
 		if err != nil {
 			// TODO 400
@@ -106,6 +110,10 @@ func servePostRequest(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	} else if date := r.FormValue("date"); date != "" { // balance information (payment)
+		if clientId == "" {
+			return
+		}
+
 		parsedDate, err := time.Parse("2006-01-02", date)
 		if err != nil {
 			// TODO 400
@@ -144,5 +152,12 @@ func servePostRequest(w http.ResponseWriter, r *http.Request) {
 		// TODO 400
 		http.Error(w, "Invalid form section...\nStop messing with my website.\nBut if you do find anything interesting,\nEmail me. dimphoton@outlook.com. Thanks.", http.StatusBadRequest)
 		return
+	}
+
+	clientsPg := Pages["clients"]
+	err = (&clientsPg).Recache(false)
+	if err != nil {
+		log.Printf("Error re-caching clients list after modification of client: %v\n", err)
+		// Can't really do anything about it at this point :(
 	}
 }

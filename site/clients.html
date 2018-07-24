@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Clients List</title>
+</head>
+<body>
+    <div class="container">
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Balance</th>
+                <th>Last Cut</th>
+                <th>Cutting Period</th>
+            </tr>
+            <tr>
+                <td><a href="/client">New Client</a></td>
+                <td>--</td>
+                <td>1 lightyear ago</td>
+                <td>--</td>
+            </tr>
+            {{range $_, $c := .}}
+                <tr>
+                    <td><a href="/client?cid={{.Uuid}}">{{.Last}}, {{.First}}</a></td>
+                    <td>
+                        <span
+                            {{if lt .Balance 0.00}}
+                                style="color: #FF5D47"
+                            {{else if gt .Balance .Quote}}
+                                style="color: #33FF55"
+                            {{end}}
+                        >
+                            ${{.Balance}}
+                        </span>
+                    </td>
+                    <td id="{{.Uuid}}">Unknown</td>
+                    <td>
+                        {{if eq 0 .Period}}
+                            Weekly
+                        {{else if eq 1 .Period}}
+                            Biweekly
+                        {{else if eq 2 .Period}}
+                            On Demand
+                        {{end}}
+                    </td>
+                </tr>
+            <!-- TODO FIXME Move script to backend function; name local Client field "daysSince" -->
+            <script type="text/javascript">
+                {{/* If we have more than 0 cuts... */}}
+                {{with $l := len .Cuts}}
+                    {{if gt $l 0}}
+                    var dates = [
+                        {{range $c.Cuts}}
+                            {{/* Then get the dates... */}}
+                            '{{.Date.Format "Jan 2, 2006"}}',
+                        {{end}}
+                    ];
+
+                    // Find the latest date in the array
+                    var latest = new Date(Math.max.apply(null, dates.map(function(e) {
+                        // Parse each element in the array
+                        return new Date(e);
+                    })));
+                    // Get the distance in days from now by taking the difference in ms since epoch and converting to rounded days
+                    // One is subtracted so today isn't counted
+                    var distanceInDays = Math.floor((new Date().getTime() - latest.getTime()) / (1000 * 60 * 60 * 24) - 1);
+
+                    var niceDistance = "No data";
+                    if (distanceInDays === 0) {
+                        niceDistance = "Today";
+                    } else if (distanceInDays === 1) {
+                        niceDistance = "Yesterday";
+                    } else {
+                        niceDistance = distanceInDays + " days ago";
+                    }
+
+                    if(({{$c.Period}} == 0 && distanceInDays > 5) || ({{$c.Period}} == 1 && distanceInDays > 12)){
+                        document.getElementById("{{$c.Uuid}}").innerHTML = "<span style='color: lawngreen'><strong>" + niceDistance + "</strong></span>";
+                    } else {
+                        document.getElementById("{{$c.Uuid}}").innerHTML = niceDistance;
+                    }
+                    {{end}}
+                {{end}}
+            </script>
+            {{end}}
+        </table>
+    </div>
+</body>
+</html>

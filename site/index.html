@@ -35,24 +35,24 @@
                 </tr>
                 {{range $_, $c := .Clients}}
                 <tr>
-                    <td>{{$c.Last}}, {{$c.First}}</td>
-                    <td>${{$c.Balance}}</td>
+                    <td>{{.Last}}, {{.First}}</td>
+                    <td>${{.Balance}}</td>
                     <td>
-                        {{if eq 0 $c.Period}}
+                        {{if eq 0 .Period}}
                             Weekly
-                        {{else if eq 1 $c.Period}}
+                        {{else if eq 1 .Period}}
                             Biweekly
-                        {{else if eq 2 $c.Period}}
+                        {{else if eq 2 .Period}}
                             On Demand
                         {{end}}
                     </td>
-                    <td id="{{$c.Uuid}}">
-                        No data
+                    <td id="{{.Uuid}}">
+                        Unknown
                     </td>
                     <!-- TODO FIXME Move script to backend function; name local Client field "daysSince" -->
                     <script type="text/javascript">
                         {{/* If we have more than 0 cuts... */}}
-                        {{with $l := len $c.Cuts}}
+                        {{with $l := len .Cuts}}
                             {{if gt $l 0}}
                             var dates = [
                                 {{range $c.Cuts}}

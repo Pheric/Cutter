@@ -38,15 +38,28 @@
                     <input name="period" id="pd1" type="radio" value="1"> Bi-Weekly<br>
                     <input name="period" id="pd2" type="radio" value="2"> On Demand<br>
                 </fieldset>
-                <input type="submit">
+                <input id="jsubmit" type="submit" disabled>
             </form>
             <script type="text/javascript">
                 document.getElementById("pd{{.Period}}").checked = true;
+                if({{.Uuid}} != ""){
+                    document.getElementById("jsubmit").disabled = false;
+                }
             </script>
         </div>
         <!-- Balance Information -->
         <div class="block">
-            <h2 id="bal-heading">Balance: ${{.Balance}}</h2>
+            <h2 id="bal-heading">
+                <span
+                    {{if lt .Balance 0.00}}
+                        style="color: #FF5D47"
+                    {{else if gt .Balance .Quote}}
+                        style="color: #33FF55"
+                    {{end}}
+                >
+                    Balance: {{.Balance}}
+                </span>
+            </h2>
             <h3><u>Add Payment</u></h3>
             <h5>Record a payment made by the client. The amount is the amount of the payment, and the date is the date the payment was made.</h5>
             <form action="/client?cid={{.Uuid}}" method="post">
@@ -54,15 +67,13 @@
                 <input name="amount" id="amount" type="number" value="{{.Quote}}" required>
                 <label for="date">Date</label>
                 <input name="date" id="date" type="date" required>
-                <input type="submit">
+                <input id="bsubmit" type="submit" disabled>
             </form>
             <script type="text/javascript">
-                if({{.Balance}} < 0){
-                    document.getElementById("bal-heading").setAttribute("style", "color: #FF5D47");
-                } else if({{.Balance}} > {{.Quote}}) {
-                    document.getElementById("bal-heading").setAttribute("style", "color: #33FF55");
-                }
                 document.getElementById("date").value = new Date().toISOString().substr(0, 10);
+                if({{.Uuid}} != ""){
+                    document.getElementById("bsubmit").disabled = false;
+                }
             </script>
         </div>
         <!-- Log -->

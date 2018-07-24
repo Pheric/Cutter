@@ -10,14 +10,14 @@ import (
 
 func InitIndex() Page {
 	return Page {
-		Path: "index",
-		RegenFunc: gen,
-		PostFunc: nil,
+		Path:      "index",
+		RegenFunc: genIndex,
+		PostFunc:  nil,
 	}
 }
 
 var indexTemplate *template.Template
-func gen(initial bool) ([]byte, error) {
+func genIndex(initial bool) ([]byte, error) {
 	var b bytes.Buffer
 	var err error
 
