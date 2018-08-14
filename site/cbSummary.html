@@ -1,0 +1,22 @@
+<p>{{.Last}}, {{.First}}<span style="float: right">{{.Phone}}</span></p>
+<p><a href="https://maps.google.com/?q={{.Address}}">{{.Address}}</a></p>
+<hr>
+<p>
+    Balance:
+    <span
+        {{if lt .Balance 0.00}}
+            style="color: #FF5D47"
+        {{else if gt .Balance .Quote}}
+            style="color: #33FF55"
+        {{end}}
+    >
+        ${{.Balance}}
+    </span>
+    <span id="pd" style="float: right; font-style: italic; color: deepskyblue"></span>
+</p>
+<p>Quote: ${{.Quote}}<span style="float: right">TTC: {{.Ttc}} mins</span></p>
+<p id="profitData" style="text-align: center; color: #777777;"></p>
+
+<div id="quote" style="display: none">{{.Quote}}</div>
+<div id="period" style="display: none">{{.Period}}</div>
+<div id="ttc" style="display: none">{{.Ttc}}</div>

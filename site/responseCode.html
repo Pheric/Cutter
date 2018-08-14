@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cutter | {{.Code}}</title>
+    {{if gt .Delay 0}}
+        <script type="text/javascript">
+            let i = {{.Delay}};
+            let interval = setInterval(function () {
+                document.getElementById("time").innerText = i;
+
+                if(i <= 0){
+                    clearInterval(interval);
+                    history.go(-1);
+                }
+                i--;
+            }, 1000)
+        </script>
+    {{end}}
+</head>
+<body>
+    <div class="container">
+        <h1>{{.Code}}</h1>
+        <h4>{{.Desc}}</h4>
+        <p>{{.Resolution}}</p>
+        {{if gt .Delay 0}}
+            <h3><strong>Returning to previous page in <span id="time">{{.Delay}}</span> seconds...</strong></h3>
+        {{end}}
+    </div>
+</body>
+</html>

@@ -29,6 +29,11 @@ func SetupTables() {
 	log.Println("Creating tables...")
 	start := time.Now()
 	conn := openConnection()
+	defer func(){
+		if err := conn.Close(); err != nil {
+			log.Printf("Error closing db connection: %v; **connection leak**\n", err)
+		}
+	}()
 
 	tables := map[string]string{
 		// Ignore column Employees.payments

@@ -30,8 +30,7 @@ func ServeClientPage(w http.ResponseWriter, r *http.Request) {
 		servePostRequest(w, r)
 	break
 	default:
-		// TODO 405
-		http.Error(w, "method unsupported", http.StatusMethodNotAllowed)
+		ServeCode(w, 405, "Method Not Allowed", "Your request is not acceptable.", 10)
 	}
 }
 
@@ -45,16 +44,14 @@ func serveGetRequest(w http.ResponseWriter, r *http.Request) {
 
 	err = clientTemplate.Execute(w, client)
 	if err != nil {
-		// TODO 500
 		log.Printf("Error while loading client.html: %v\n", err)
-		http.Error(w, "internal server error", http.StatusInternalServerError)
+		ServeCode(w, 500, "Internal Server Error", "Please retry your last action.", 10)
 		return
 	}
 }
 
 func servePostRequest(w http.ResponseWriter, r *http.Request) {
 	clientId := r.URL.Query().Get("cid")
-	log.Println(r.URL.Query())
 	client, err := data.LoadClientWithUuid(clientId)
 	if err != nil {
 		log.Printf("Error loading client with uuid %s: %v\n", clientId, err)
@@ -70,9 +67,8 @@ func servePostRequest(w http.ResponseWriter, r *http.Request) {
 
 		err := client.SaveShallow()
 		if err != nil {
-			// TODO 500
 			log.Printf("Error saving client: %v\n", err)
-			http.Error(w, "internal server error", http.StatusInternalServerError)
+			ServeCode(w, 500, "Internal Server Error", "Please retry your last action.", 10)
 			return
 		}
 	} else if quote := r.FormValue("quote"); quote != "" { // job information
@@ -82,20 +78,17 @@ func servePostRequest(w http.ResponseWriter, r *http.Request) {
 
 		parsedQuote, err := strconv.ParseFloat(quote, 32)
 		if err != nil {
-			// TODO 400
-			http.Error(w, "Quote value is NaN", http.StatusBadRequest)
+			ServeCode(w, 400, "Improper Submission", "Your quote value is not a number.", 10)
 			return
 		}
 		parsedTtc, err := strconv.Atoi(r.FormValue("ttc"))
 		if err != nil {
-			// TODO 400
-			http.Error(w, "TTC value is NaN", http.StatusBadRequest)
+			ServeCode(w, 400, "Improper Submission", "Your ttc value is not a number.", 10)
 			return
 		}
 		parsedPeriod, err := strconv.Atoi(r.FormValue("period"))
 		if err != nil {
-			// TODO 400
-			http.Error(w, "Period value is NaN...\nStop messing with my website.\nBut if you do find anything interesting,\nEmail me. dimphoton@outlook.com. Thanks.", http.StatusBadRequest)
+			ServeCode(w, 400, "Improper Submission", "Your period value is not acceptable.", 10)
 			return
 		}
 		client.Quote = float32(parsedQuote)
@@ -104,9 +97,8 @@ func servePostRequest(w http.ResponseWriter, r *http.Request) {
 
 		err = client.SaveShallow()
 		if err != nil {
-			// TODO 500
 			log.Printf("Error saving client: %v\n", err)
-			http.Error(w, "internal server error", http.StatusInternalServerError)
+			ServeCode(w, 500, "Internal Server Error", "Please retry your last action.", 10)
 			return
 		}
 	} else if date := r.FormValue("date"); date != "" { // balance information (payment)
@@ -116,23 +108,20 @@ func servePostRequest(w http.ResponseWriter, r *http.Request) {
 
 		parsedDate, err := time.Parse("2006-01-02", date)
 		if err != nil {
-			// TODO 400
-			http.Error(w, "Invalid date format", http.StatusBadRequest)
+			ServeCode(w, 400, "Improper Submission", "Your date value is not acceptable.", 10)
 			return
 		}
 		parsedAmount, err := strconv.ParseFloat(r.FormValue("amount"), 32)
 		if err != nil {
-			// TODO 400
-			http.Error(w, "Amount value is NaN", http.StatusBadRequest)
+			ServeCode(w, 400, "Improper Submission", "Your amount value is not a number.", 10)
 			return
 		}
 
 		client.Balance += float32(parsedAmount)
 		err = client.SaveShallow()
 		if err != nil {
-			// TODO 500
 			log.Printf("Error saving client: %v\n", err)
-			http.Error(w, "internal server error", http.StatusInternalServerError)
+			ServeCode(w, 500, "Internal Server Error", "Please retry your last action.", 10)
 			return
 		}
 
@@ -142,15 +131,13 @@ func servePostRequest(w http.ResponseWriter, r *http.Request) {
 			Date: parsedDate,
 		}.SavePayment()
 		if err != nil {
-			// TODO 500
 			log.Printf("Error saving payment of %f to %s: %v\n", parsedAmount, client.Uuid, err)
-			http.Error(w, "internal server error", http.StatusInternalServerError)
+			ServeCode(w, 500, "Internal Server Error", "Please retry your last action.", 10)
 			return
 		}
 	} else {
 		// What did they do...?
-		// TODO 400
-		http.Error(w, "Invalid form section...\nStop messing with my website.\nBut if you do find anything interesting,\nEmail me. dimphoton@outlook.com. Thanks.", http.StatusBadRequest)
+		ServeCode(w, 400, "Improper Submission", "You're out of line. Please either stop messing with my site or be responsible and report bugs. Thanks. dimphoton@outlook.com", 10)
 		return
 	}
 

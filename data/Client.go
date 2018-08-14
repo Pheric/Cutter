@@ -32,7 +32,13 @@ func LoadClientWithUuid(uuid string) (Client, error) {
 	if uuid == "" {
 		return MakeClient(), nil
 	}
+
 	conn := openConnection()
+	defer func(){
+		if err := conn.Close(); err != nil {
+			log.Printf("Error closing db connection: %v; **connection leak**\n", err)
+		}
+	}()
 
 	c := new(Client)
 	err := conn.Model(c).Where("uuid = ?", uuid).Select()
@@ -54,6 +60,11 @@ func LoadClientWithUuid(uuid string) (Client, error) {
 
 func LoadAllClients() ([]Client, error) {
 	conn := openConnection()
+	defer func(){
+		if err := conn.Close(); err != nil {
+			log.Printf("Error closing db connection: %v; **connection leak**\n", err)
+		}
+	}()
 
 	type cId struct {
 		tableName string `sql:"clients"`
@@ -107,6 +118,11 @@ func MakeClient() Client {
 
 func (c Client) SaveShallow() error {
 	conn := openConnection()
+	defer func(){
+		if err := conn.Close(); err != nil {
+			log.Printf("Error closing db connection: %v; **connection leak**\n", err)
+		}
+	}()
 
 	_, err := conn.Model(&c).Returning("uuid").Insert()
 	if err != nil && strings.Contains(err.Error(), "#23505") { // If row exists

@@ -32,11 +32,22 @@ func Init(port int) {
 
 	mux := http.NewServeMux()
 	mux.Handle("/styling/", http.StripPrefix("/styling", (http.FileServer(http.FileSystem(http.Dir("site/styling/"))))))
+	mux.Handle("/scripts/", http.StripPrefix("/scripts", (http.FileServer(http.FileSystem(http.Dir("site/scripts/"))))))
 	mux.Handle("/client", http.HandlerFunc(ServeClientPage))
 	mux.Handle("/clients", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
 		p := Pages["clients"]
 		(&p).ServePage(w, r)
 	}))
+	mux.Handle("/experiment", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
+		p := Pages["clientsPanel"]
+		(&p).ServePage(w, r)
+	}))
+	mux.Handle("/getCbSummary", http.HandlerFunc(HandleGetCBSummary))
+	mux.Handle("/getCbLogJs", http.HandlerFunc(HandleGetCBLogJs))
+	mux.Handle("/getCbLogHtml", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
+		http.ServeFile(w, r, "site/cbLog.html")
+	}))
+	mux.Handle("/cbEdit", http.HandlerFunc(HandleCBEdit))
 	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
 		p := Pages["index"]
 		(&p).ServePage(w, r)
@@ -59,6 +70,10 @@ func registerPages() {
 	clients := InitClientsPage()
 	Pages[clients.Path] = clients
 	clients.InitAutoRecache(time.Hour * 1)
+
+	cPanel := InitClientsPanel()
+	Pages[cPanel.Path] = cPanel
+	cPanel.InitAutoRecache(time.Minute * 30)
 }
 
 // FIXME:
@@ -73,7 +88,7 @@ func checkRootPath(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Is URL pointing to a directory?
 		if b := path.Base(r.URL.Path); b == "." || b == "/" {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			ServeCode(w, 401, "Unauthorized", "Get back where you belong!", 5)
 			return
 		}
 		handler.ServeHTTP(w, r)

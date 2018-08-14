@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script rel="text/javascript" src="scripts/clientsPanel.js"></script>
+    <link rel="stylesheet" href="styling/clientsPanel.css">
+    <meta charset="UTF-8">
+    <title>Experiment</title>
+</head>
+<body>
+    <!-- TODO Navbar -->
+    <div class="container client-list">
+        {{range .}}
+            <div class="client" id="{{.Uuid}}" onclick="selectClient('{{.Uuid}}')">
+                <div class="c-c1">
+                    <p class="c-name">
+                        {{.Last}}, {{.First}}
+                    </p>
+                    <p class="c-bal">
+                        Balance: ${{.Balance}}
+                    </p>
+                </div>
+                <div class="c-c2">
+                    <p class="c-pd">
+                        {{if eq .Period 0}}
+                            W
+                        {{else if eq .Period 1}}
+                            B-W
+                        {{else}}
+                            D
+                        {{end}}
+                    </p>
+                    <p class="c-quote">
+                        ${{.Quote}}
+                    </p>
+                </div>
+            </div>
+        {{end}}
+    </div>
+    <div class="container client-box">
+        <div class="cb-nav">
+            <ul>
+                <li id="cb-nav-summary" onclick="changePage('summary')">Summary</li>
+                <li id="cb-nav-log" onclick="changePage('log')">Log</li>
+                <li id="cb-nav-edit" onclick="changePage('edit')">Edit Client</li>
+            </ul>
+        </div>
+        <div id="cb" class="box">
+
+        </div>
+    </div>
+</body>
+</html>

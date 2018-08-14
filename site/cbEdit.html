@@ -1,0 +1,31 @@
+<form action="/cbEdit?cid={{.Uuid}}" method="post">
+    <fieldset>
+        <legend>Client Data</legend>
+        <fieldset>
+            <legend>Name</legend>
+            <input name="last" type="text" value="{{.Last}}" required>
+            ,
+            <input name="first" type="text" value="{{.First}}">
+        </fieldset>
+        <label for="phone">Phone</label>
+        <input name="phone" id="phone" type="text" value="{{.Phone}}">
+        <label for="address">Address</label>
+        <input name="address" id="address" type="text" value="{{.Address}}">
+    </fieldset>
+    <fieldset>
+        <label>Property Data</label>
+        <label for="quote">Quote ($)</label>
+        <input name="quote" id="quote" type="number" value="{{.Quote}}" required>
+        <label for="ttc">TTC (mins)</label>
+        <input name="ttc" id="ttc" type="number" value="{{.Ttc}}">
+        <fieldset>
+            <legend>Cutting Period</legend>
+            <input name="period" id="pd0" type="radio" value="0"> Weekly<br>
+            <input name="period" id="pd1" type="radio" value="1"> Bi-Weekly<br>
+            <input name="period" id="pd2" type="radio" value="2"> On Demand<br>
+        </fieldset>
+        <input id="jsubmit" type="submit" disabled>
+        <div id="uuid" hidden>{{.Uuid}}</div>
+        <div id="period" hidden>{{.Period}}</div>
+    </fieldset>
+</form>

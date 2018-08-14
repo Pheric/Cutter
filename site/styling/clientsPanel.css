@@ -1,0 +1,98 @@
+html * {
+    font-size: 16px;
+    border: 1px dashed greenyellow;
+}
+
+.container {
+    display: inline-block;
+    margin: 3rem;
+    background: rgba(255, 255, 255, .4);
+}
+
+/* = = = NAV = = = */
+
+.nav li {
+    display: block;
+    padding: 1rem 2rem;
+}
+
+/* = = = Client list = = = */
+
+.client-list {
+    display: inline-block;
+    max-height: 70%;
+}
+
+.client:hover {
+    background-color: rgba(0, 190, 50, .8);
+    transition: 0.6s;
+}
+
+.client:hover * {
+    color: #FFFFFF;
+    transition: 0.4s;
+}
+
+.selected {
+    background-color: rgba(0, 190, 50, .2);
+}
+
+.client .c-c1,.c-c2 {
+    display: inline-block;
+    padding: 0 10px;
+}
+
+.client .c-c2 {
+    float: right;
+}
+
+.client .c-name {
+    font-weight: bolder;
+}
+
+.client .c-pd {
+    color: deepskyblue;
+    font-style: italic;
+}
+
+.client .c-bal {
+
+}
+
+.client .c-quote {
+    color: #777777;
+}
+
+/* = = = Client Box = = = */
+
+.client-box {
+    display: inline-block;
+    width: auto;
+    max-height: 40%;
+}
+
+/* - - - Nav - - - */
+
+.cb-nav {
+    width: 100%;
+}
+
+.cb-nav li {
+    display: inline-block;
+    height: 100%;
+    padding: 0 10px;
+    border-bottom: 3px solid rgba(0, 0, 0, 0); /* Transparent so transitions don't move the elements */
+}
+.cb-nav *:last-child {
+    float: right;
+}
+
+.cb-nav li:hover {
+    background-color: rgba(0, 190, 50, .6);
+    transition: background-color .7s;
+}
+
+/* - - - Box - - - */
+/* (see cb*.html files) */
+
+/* - - Summary - - */

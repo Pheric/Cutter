@@ -21,6 +21,11 @@ type Cut struct {
 
 func LoadCutWithUuid(uuid string) (Cut, error) {
 	conn := openConnection()
+	defer func(){
+		if err := conn.Close(); err != nil {
+			log.Printf("Error closing db connection: %v; **connection leak**\n", err)
+		}
+	}()
 
 	var c Cut
 	err := conn.Model(&c).Where("uuid = ?", uuid).Select()
@@ -53,6 +58,11 @@ func LoadCutWithUuid(uuid string) (Cut, error) {
 
 func LoadCutsForClient(uuid string) []Cut {
 	conn := openConnection()
+	defer func(){
+		if err := conn.Close(); err != nil {
+			log.Printf("Error closing db connection: %v; **connection leak**\n", err)
+		}
+	}()
 
 	// Load all uuids
 	type cId struct {
@@ -91,6 +101,11 @@ func LoadCutsForClient(uuid string) []Cut {
 
 func (c Cut) Save() error {
 	conn := openConnection()
+	defer func(){
+		if err := conn.Close(); err != nil {
+			log.Printf("Error closing db connection: %v; **connection leak**\n", err)
+		}
+	}()
 
 	// Hackery required because the ORM has issues with arrays apparently
 	// Make it look like an array

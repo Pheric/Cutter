@@ -1,6 +1,9 @@
 package data
 
-import "strings"
+import (
+	"strings"
+	"log"
+)
 
 type Employee struct {
 	tableName struct{} `sql:"Employees"`
@@ -14,6 +17,11 @@ type Employee struct {
 
 func LoadEmployeeWithUuid(uuid string) (Employee, error) {
 	conn := openConnection()
+	defer func(){
+		if err := conn.Close(); err != nil {
+			log.Printf("Error closing db connection: %v; **connection leak**\n", err)
+		}
+	}()
 
 	e := new(Employee)
 	err := conn.Model(e).Where("uuid = ?", uuid).Select()
@@ -34,6 +42,11 @@ func LoadEmployeeWithUuid(uuid string) (Employee, error) {
 // Could later be updated/extended by returning a []*Employee
 func LoadEmployeeByName(last, first string) (*Employee, error) {
 	conn := openConnection()
+	defer func(){
+		if err := conn.Close(); err != nil {
+			log.Printf("Error closing db connection: %v; **connection leak**\n", err)
+		}
+	}()
 
 	e := new(Employee)
 	err := conn.Model(e).Where("first = ?", first).Where("last = ?", last).Limit(1).Select()
@@ -52,6 +65,11 @@ func LoadAllEmployees() ([]Employee, error) {
 
 func (e Employee) Save() error {
 	conn := openConnection()
+	defer func(){
+		if err := conn.Close(); err != nil {
+			log.Printf("Error closing db connection: %v; **connection leak**\n", err)
+		}
+	}()
 
 	_, err := conn.Model(e).Insert()
 	if err != nil && strings.Contains(err.Error(), "#23505") { // If row exists

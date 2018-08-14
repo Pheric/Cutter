@@ -36,8 +36,7 @@ func (p *Page) InitAutoRecache(interval time.Duration) {
 func (p *Page) ServePage(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
 		if r.Method != "POST" || p.PostFunc == nil {
-			// Todo 405
-			http.Error(w, "method unsupported", http.StatusMethodNotAllowed)
+			ServeCode(w, 405, "Method Not Allowed", "Your request is not acceptable.", 10)
 			return
 		}
 		p.PostFunc(w, r)
@@ -49,8 +48,7 @@ func (p *Page) ServePage(w http.ResponseWriter, r *http.Request) {
 		err := p.Recache(true)
 		if err != nil {
 			log.Printf("Error while attempting live page load: %v\n", err)
-			// TODO 500
-			http.Error(w, "internal server error", http.StatusInternalServerError)
+			ServeCode(w, 500, "Internal Server Error", "Please retry your last action.", 10)
 			return
 		}
 		p.ServePage(w, r)
