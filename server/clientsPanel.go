@@ -26,9 +26,9 @@ func genClientsPanel(initial bool) ([]byte, error) {
 	var err error
 
 	if initial {
-		clientsPanelTemplate, err = template.ParseFiles("site/experiment.html") // FIXME
+		clientsPanelTemplate, err = template.ParseFiles("site/clientsPanel.html") // FIXME
 		if err != nil {
-			return nil, fmt.Errorf("error generating experiment.html: %v\n", err) // FIXME
+			return nil, fmt.Errorf("error generating clientsPanel.html: %v\n", err) // FIXME
 		}
 	}
 

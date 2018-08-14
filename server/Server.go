@@ -38,7 +38,7 @@ func Init(port int) {
 		p := Pages["clients"]
 		(&p).ServePage(w, r)
 	}))
-	mux.Handle("/experiment", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
+	mux.Handle("/clientspanel", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
 		p := Pages["clientsPanel"]
 		(&p).ServePage(w, r)
 	}))
